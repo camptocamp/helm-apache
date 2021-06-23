@@ -1,0 +1,141 @@
+{{- if .Values.mapserver.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "mapserver.fullname" . }}
+  labels:
+{{ include "mapserver.labels" . | indent 4 }}
+spec:
+  replicas: {{ .Values.mapserver.replicaCount }}
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "mapserver.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "mapserver.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ template "mapserver.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.mapserver.podSecurityContext | nindent 8 }}
+      {{- if .Values.mapserver.config.enable }}
+      initContainers:
+        - name: mapserver-config
+          image: "{{ .Values.mapserver.config.image.repository }}:{{ .Values.mapserver.config.image.tag }}"
+          imagePullPolicy: {{ .Values.mapserver.image.pullPolicy }}
+          args: ['bash', '-c', 'cp -a /etc/mapserver/* /etc/mapserver-volume/']
+          volumeMounts:
+            - mountPath: /etc/mapserver-volume
+              name: configs
+          env:
+            {{- range $name, $value := .Values.mapserver.config.env }}
+            - name: {{ $name | quote }}
+              value: {{ $value | quote }}
+            {{- end }}
+            {{- range $name, $value := .Values.mapserver.config.configMap }}
+            - name: {{ $name | quote }}
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ $value.name | quote }}
+                  key: {{ $value.key | quote }}
+            {{- end }}
+          terminationMessagePolicy: FallbackToLogsOnError
+          resources:
+            {{- toYaml .Values.mapserver.config.resources | nindent 12 }}
+      {{- end -}}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.mapserver.securityContext | nindent 12 }}
+          image: "{{ .Values.mapserver.image.repository }}:{{ .Values.mapserver.image.tag }}"
+          imagePullPolicy: {{ .Values.mapserver.image.pullPolicy }}
+          env:
+            {{- range $name, $value := .Values.mapserver.env }}
+            - name: {{ $name | quote }}
+              value: {{ $value | quote }}
+            {{- end }}
+            {{- range $name, $value := .Values.mapserver.configMap }}
+            - name: {{ $name | quote }}
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ $value.name | quote }}
+                  key: {{ $value.key | quote }}
+            {{- end }}
+          terminationMessagePolicy: FallbackToLogsOnError
+          volumeMounts:
+            - mountPath: /etc/mapserver
+              name: configs
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 5
+            timeoutSeconds: 10
+            periodSeconds: 20
+          resources:
+            {{- toYaml .Values.mapserver.resources | nindent 12 }}
+        {{- if .Values.mapserver.apacheExporter.enabled -}}
+        - name: apache-exporter
+          image: "{{ .Values.mapserver.apacheExporter.image.repository }}:{{ .Values.mapserver.apacheExporter.image.tag }}"
+          securityContext:
+            {{- toYaml .Values.mapserver.securityContext | nindent 12 }}
+          imagePullPolicy: {{ .Values.mapserver.image.pullPolicy }}
+          args:
+            - '--scrape_uri=http://{{ include "mapserver.fullname" . }}/server-status-remote?auto'
+          terminationMessagePolicy: FallbackToLogsOnError
+          ports:
+            - name: prometheus
+              containerPort: 9117
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: prometheus
+            initialDelaySeconds: 5
+            timeoutSeconds: 10
+            periodSeconds: 20
+          resources:
+            {{- toYaml .Values.mapserver.apache_exporter.resources | nindent 12 }}
+        {{- end }}
+      volumes:
+        - name: configs
+          emptyDir: {}
+      {{- with .Values.mapserver.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      affinity:
+      {{-   if .service.affinity }}
+      {{      toYaml .service.affinity | indent 2 }}
+      {{-   else if .affinitySelector }}
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                - {{ include "mapserver.name" . }}
+              - key: app.kubernetes.io/instance
+                operator: In
+                values:
+                - {{ .Release.Name }}
+            topologyKey: "kubernetes.io/hostname"
+      {{- end }}
+    {{- with .Values.mapserver.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+{{- end -}}

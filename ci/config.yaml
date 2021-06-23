@@ -1,0 +1,11 @@
+checks:
+  required_workflows:
+    clean.yaml: False
+    audit.yaml: False
+    dependabot-auto-merge.yaml: False
+    backport.yaml: False
+    codeql.yaml: False
+  dependabot_config: False
+  black:
+    ignore_patterns_re:
+      - .*\.yaml

@@ -1,0 +1,24 @@
+{{- if .Values.mapserver.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "mapserver.fullname" . }}
+  labels:
+{{ include "mapserver.labels" . | indent 4 }}
+spec:
+  type: {{ .Values.mapserver.service.type }}
+  ports:
+    - port: {{ .Values.mapserver.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+{{- if .Values.mapserver.apacheExporter.enabled -}}
+    - port: 9117
+      targetPort: prometheus
+      protocol: TCP
+      name: prometheus
+{{- end -}}
+  selector:
+    app.kubernetes.io/name: {{ include "mapserver.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end -}}
