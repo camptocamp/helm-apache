@@ -31,3 +31,6 @@ jobs:
 
       - name: Checks
         run: c2cciutils-checks
+
+      - uses: azure/setup-helm@v1
+      - run: helm lint .
