@@ -11,13 +11,11 @@ spec:
     type: RollingUpdate
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "mapserver.name" . }}
-      app.kubernetes.io/instance: {{ .Release.Name }}
+      {{- include "mapserver.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{ include "mapserver.name" . }}
-        app.kubernetes.io/instance: {{ .Release.Name }}
+      {{- include "mapserver.selectorLabels" . | nindent 8 }}
     spec:
     {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -50,7 +48,7 @@ spec:
           terminationMessagePolicy: FallbackToLogsOnError
           resources:
             {{- toYaml .Values.mapserver.config.resources | nindent 12 }}
-      {{- end -}}
+      {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
@@ -138,4 +136,4 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
     {{- end }}
-{{- end -}}
+{{- end }}

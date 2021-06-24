@@ -4,7 +4,7 @@ Expand the name of the chart.
 */}}
 {{- define "mapserver.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
-{{- end -}}
+{{- end }}
 
 {{/*
 Create a default fully qualified app name.
@@ -20,29 +20,36 @@ If release name contains chart name it will be used as a full name.
 {{- .Release.Name | trunc 63 | trimSuffix "-" -}}
 {{- else -}}
 {{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
-{{- end -}}
-{{- end -}}
-{{- end -}}
+{{- end }}
+{{- end }}
+{{- end }}
 
 {{/*
 Create chart name and version as used by the chart label.
 */}}
 {{- define "mapserver.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
-{{- end -}}
+{{- end }}
 
 {{/*
 Common labels
 */}}
 {{- define "mapserver.labels" -}}
-app.kubernetes.io/name: {{ include "mapserver.name" . }}
 helm.sh/chart: {{ include "mapserver.chart" . }}
-app.kubernetes.io/instance: {{ .Release.Name }}
+{{ include "mapserver.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
-{{- end -}}
+{{- end }}
+
+{{/*
+Selector labels
+*/}}
+{{- define "mapserver.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "mapserver.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
 
 {{/*
 Create the name of the service account to use
@@ -52,5 +59,5 @@ Create the name of the service account to use
     {{ default (include "mapserver.fullname" .) .Values.mapserver.serviceAccount.name }}
 {{- else -}}
     {{ default "default" .Values.mapserver.serviceAccount.name }}
-{{- end -}}
-{{- end -}}
+{{- end }}
+{{- end }}

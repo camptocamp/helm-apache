@@ -19,6 +19,5 @@ spec:
       name: prometheus
 {{- end -}}
   selector:
-    app.kubernetes.io/name: {{ include "mapserver.name" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
+    {{- include "mapserver.selectorLabels" . | nindent 4 }}
 {{- end -}}
