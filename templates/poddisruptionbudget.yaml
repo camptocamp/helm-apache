@@ -2,14 +2,12 @@
 apiVersion: policy/v1beta1
 kind: PodDisruptionBudget
 metadata:
-  name: {{ template "c2cgeoportal.fullname" . }}-mapserver-pdb
+  name: {{ template "mapserver.fullname" . }}
   labels:
-    app.kubernetes.io/name: {{ include "mapserver.name" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
+    {{- include "mapserver.selectorLabels" . | nindent 4 }}
 spec:
   maxUnavailable: 1
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "mapserver.name" . }}
-      app.kubernetes.io/instance: {{ .Release.Name }}
+      {{- include "mapserver.selectorLabels" . | nindent 6 }}
 {{- end }}
