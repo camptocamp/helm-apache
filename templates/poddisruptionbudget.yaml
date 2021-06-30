@@ -1,4 +1,3 @@
-{{- if .Values.mapserver.enabled -}}
 apiVersion: policy/v1beta1
 kind: PodDisruptionBudget
 metadata:
@@ -10,4 +9,3 @@ spec:
   selector:
     matchLabels:
       {{- include "mapserver.selectorLabels" . | nindent 6 }}
-{{- end }}
