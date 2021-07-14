@@ -20,12 +20,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: camptocamp/initialise-gopass-summon-action@v2
-        with:
-          ci-gpg-private-key: ${{secrets.CI_GPG_PRIVATE_KEY}}
-          github-gopass-ci-token: ${{secrets.GOPASS_CI_GITHUB_TOKEN}}
-        if: env.HAS_SECRETS == 'HAS_SECRETS'
-
       - run: echo "${HOME}/.local/bin" >> ${GITHUB_PATH}
       - run: python3 -m pip install --user --requirement=ci/requirements.txt
 
@@ -33,5 +27,13 @@ jobs:
         run: c2cciutils-checks
 
       - uses: azure/setup-helm@v1
-      - run: helm lint .
-      - run: helm template test .
+      - run: helm lint charts/mapserver
+      - run: helm template test charts/mapserver
+
+      - run: git config --global user.email ci@camptocamp.com
+      - run: git config --global user.name CI
+      - name: Run chart-releaser
+        uses: helm/chart-releaser-action@v1.2.1
+        env:
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        if: github.ref == 'refs/heads/master' && startsWith(github.event.head_commit.message, '[release] ')
