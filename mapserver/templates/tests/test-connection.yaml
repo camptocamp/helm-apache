@@ -11,5 +11,5 @@ spec:
     - name: wget
       image: busybox
       command: ['wget']
-      args:  ['{{ include "mapserver.fullname" . }}:{{ .Values.mapserver.service.port }}']
+      args:  ['{{ include "mapserver.fullname" . }}:{{ .Values.service.port }}']
   restartPolicy: Never

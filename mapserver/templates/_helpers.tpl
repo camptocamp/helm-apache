@@ -56,9 +56,9 @@ app.kubernetes.io/component: mapserver
 Create the name of the service account to use
 */}}
 {{- define "mapserver.serviceAccountName" -}}
-{{- if .Values.mapserver.serviceAccount.create -}}
-    {{ default (include "mapserver.fullname" .) .Values.mapserver.serviceAccount.name }}
+{{- if .Values.serviceAccount.create -}}
+    {{ default (include "mapserver.fullname" .) .Values.serviceAccount.name }}
 {{- else -}}
-    {{ default "default" .Values.mapserver.serviceAccount.name }}
+    {{ default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
