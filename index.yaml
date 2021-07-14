@@ -3,6 +3,15 @@ entries:
   mapserver:
   - apiVersion: v2
     appVersion: "1.0"
+    created: "2021-07-14T15:17:38.588687925Z"
+    description: A Helm chart for Kubernetes
+    digest: f0bcead1f85234cd241bec694a1da0e2b7f390e79445cd26b3730067f8fbfb96
+    name: mapserver
+    urls:
+    - https://github.com/camptocamp/helm-mapserver/releases/download/0.1.9/mapserver-0.1.9.tgz
+    version: 0.1.9
+  - apiVersion: v2
+    appVersion: "1.0"
     created: "2021-07-14T12:02:52.625157209Z"
     description: A Helm chart for Kubernetes
     digest: a04c31cd53aa7d31ef56fdf3d7e543dbf531157aa2087a7c62f414ac771dec55
@@ -19,4 +28,4 @@ entries:
     urls:
     - https://github.com/camptocamp/helm-mapserver/releases/download/mapserver-0.1.0/mapserver-0.1.0.tgz
     version: 0.1.0
-generated: "2021-07-14T12:02:52.625172209Z"
+generated: "2021-07-14T15:17:38.588698225Z"
