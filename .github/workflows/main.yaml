@@ -33,16 +33,16 @@ jobs:
       - run: git config --global user.email ci@camptocamp.com
       - run: git config --global user.name CI
       - run: >
-          docker run --rm --env=CR_TOKEN=${{ secrets.GITHUB_TOKEN }} --volume=$(pwd):/charts --entrypoint=
+          docker run --rm --volume=$(pwd):/charts --entrypoint=
           quay.io/helmpack/chart-releaser cr
-          package mapserver --package-path=/charts/.cr-release-packages
+          package /charts/mapserver --package-path=/charts/.cr-release-packages
       - run: >
           docker run --rm --env=CR_TOKEN=${{ secrets.GITHUB_TOKEN }} --volume=$(pwd):/charts --entrypoint=
           quay.io/helmpack/chart-releaser cr
           upload --owner=camptocamp --git-repo=helm-mapserver --commit=99f9a407f05588c089d67d93a0dc18fa89d0c497 \
           --package-path=/charts/.cr-release-packages --release-name-template='{{ .Version }}'
       - run: >
-          docker run --rm --env=CR_TOKEN=${{ secrets.GITHUB_TOKEN }} --volume=$(pwd):/charts --entrypoint=
+          docker run --rm --env=CR_TOKEN=${{ secrets.GITHUB_TOKEN }} --entrypoint=
           quay.io/helmpack/chart-releaser cr
           index --owner=camptocamp --git-repo=helm-mapserver --charts-repo=https://camptocamp.github.io/helm-mapserver
           --push --token=${{ secrets.GITHUB_TOKEN }}
