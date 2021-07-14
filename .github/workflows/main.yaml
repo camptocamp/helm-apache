@@ -37,7 +37,7 @@ jobs:
           curl -sSLo cr.tar.gz "https://github.com/helm/chart-releaser/releases/download/v1.2.1/chart-releaser_1.2.1_linux_amd64.tar.gz"
           tar -xzf cr.tar.gz
           rm -f cr.tar.gz
-          mv cp /usr/bin
+          mv cr /usr/bin
       - run: >
           cr package mapserver
         if: github.event_name == 'push'
