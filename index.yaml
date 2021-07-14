@@ -1,0 +1,13 @@
+apiVersion: v1
+entries:
+  mapserver:
+  - apiVersion: v2
+    appVersion: "1.0"
+    created: "2021-07-14T11:37:32.480066922Z"
+    description: A Helm chart for Kubernetes
+    digest: e8085f4cb3a9c37c1896861c5a6c9d6a95080bac3764b50fe3539e3b3c0358cd
+    name: mapserver
+    urls:
+    - https://github.com/camptocamp/helm-mapserver/releases/download/mapserver-0.1.0/mapserver-0.1.0.tgz
+    version: 0.1.0
+generated: "2021-07-14T11:37:32.480079922Z"
