@@ -44,10 +44,10 @@ jobs:
         if: github.event_name == 'push'
       - run: >
           cr upload --owner=camptocamp --git-repo=helm-mapserver --commit=${{ github.sha }}
-          --release-name-template='{{ .Version }}' --token=${{ secret.token }}
+          --release-name-template='{{ .Version }}' --token=${{ secrets.token }}
         if: github.event_name == 'push'
       - run: >
           cr index --owner=camptocamp --git-repo=helm-mapserver --charts-repo=https://camptocamp.github.io/helm-mapserver
-          --push --release-name-template='{{ .Version }}' --token=${{ secret.token }}
+          --push --release-name-template='{{ .Version }}' --token=${{ secrets.token }}
         if: github.event_name == 'push'
         #if: github.ref == 'refs/heads/master' && startsWith(github.event.head_commit.message, '[release] ')
