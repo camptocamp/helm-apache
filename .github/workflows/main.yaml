@@ -51,6 +51,6 @@ jobs:
           --volume=$(pwd)/.cr-index:/.cr-index
           --entrypoint= quay.io/helmpack/chart-releaser cr
           index --owner=camptocamp --git-repo=helm-mapserver --charts-repo=https://camptocamp.github.io/helm-mapserver
-          --push --token=${{ secrets.GITHUB_TOKEN }} --release-name-template='{{ .Version }}' --charts-repo=/charts
+          --push --release-name-template='{{ .Version }}'
         if: github.event_name == 'push'
         #if: github.ref == 'refs/heads/master' && startsWith(github.event.head_commit.message, '[release] ')
