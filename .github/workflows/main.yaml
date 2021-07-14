@@ -33,17 +33,24 @@ jobs:
       - run: git config --global user.email ci@camptocamp.com
       - run: git config --global user.name CI
       - run: >
-          docker run --rm --volume=$(pwd):/charts --entrypoint=
-          quay.io/helmpack/chart-releaser cr
-          package /charts/mapserver --package-path=/charts/.cr-release-packages
+          docker run --rm --volume=$(pwd):/charts --volume=$(pwd)/.cr-release-packages:/.cr-release-packages
+          --volume=$(pwd)/.cr-index:/.cr-index
+          --entrypoint= quay.io/helmpack/chart-releaser cr
+          package /charts/mapserver
+        if: github.event_name == 'push'
       - run: >
-          docker run --rm --env=CR_TOKEN=${{ secrets.GITHUB_TOKEN }} --volume=$(pwd):/charts --entrypoint=
-          quay.io/helmpack/chart-releaser cr
-          upload --owner=camptocamp --git-repo=helm-mapserver --commit=${{ github.sha }}
-          --package-path=/charts/.cr-release-packages --release-name-template='{{ .Version }}'
+          docker run --rm --env=CR_TOKEN=${{ secrets.GITHUB_TOKEN }} --volume=$(pwd):/charts
+          --volume=$(pwd)/.cr-release-packages:/.cr-release-packages
+          --volume=$(pwd)/.cr-index:/.cr-index
+          --entrypoint= quay.io/helmpack/chart-releaser cr
+          upload --owner=camptocamp --git-repo=helm-mapserver --commit=${{ github.sha }} --release-name-template='{{ .Version }}'
+        if: github.event_name == 'push'
       - run: >
-          docker run --rm --env=CR_TOKEN=${{ secrets.GITHUB_TOKEN }} --entrypoint=
-          quay.io/helmpack/chart-releaser cr
+          docker run --rm --env=CR_TOKEN=${{ secrets.GITHUB_TOKEN }}
+          --volume=$(pwd)/.cr-release-packages:/.cr-release-packages
+          --volume=$(pwd)/.cr-index:/.cr-index
+          --entrypoint= quay.io/helmpack/chart-releaser cr
           index --owner=camptocamp --git-repo=helm-mapserver --charts-repo=https://camptocamp.github.io/helm-mapserver
-          --push --token=${{ secrets.GITHUB_TOKEN }}
+          --push --token=${{ secrets.GITHUB_TOKEN }} --release-name-template='{{ .Version }}'
+        if: github.event_name == 'push'
         #if: github.ref == 'refs/heads/master' && startsWith(github.event.head_commit.message, '[release] ')
