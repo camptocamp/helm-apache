@@ -32,25 +32,20 @@ jobs:
 
       - run: git config --global user.email ci@camptocamp.com
       - run: git config --global user.name CI
+      - run: |
+          cd /tmp
+          curl -sSLo cr.tar.gz "https://github.com/helm/chart-releaser/releases/download/v1.2.1/chart-releaser_1.2.1_linux_amd64.tar.gz"
+          tar -xzf cr.tar.gz
+          rm -f cr.tar.gz
+          mv cp /usr/bin
       - run: >
-          docker run --rm --volume=$(pwd):/charts --volume=$(pwd)/.cr-release-packages:/.cr-release-packages
-          --volume=$(pwd)/.cr-index:/.cr-index
-          --entrypoint= quay.io/helmpack/chart-releaser cr
-          package /charts/mapserver
+          cr package mapserver
         if: github.event_name == 'push'
       - run: >
-          docker run --rm --env=CR_TOKEN=${{ secrets.GITHUB_TOKEN }} --volume=$(pwd):/charts
-          --volume=$(pwd)/.cr-release-packages:/.cr-release-packages
-          --volume=$(pwd)/.cr-index:/.cr-index
-          --entrypoint= quay.io/helmpack/chart-releaser cr
-          upload --owner=camptocamp --git-repo=helm-mapserver --commit=${{ github.sha }} --release-name-template='{{ .Version }}'
+          cr upload --owner=camptocamp --git-repo=helm-mapserver --commit=${{ github.sha }} --release-name-template='{{ .Version }}'
         if: github.event_name == 'push'
       - run: >
-          docker run --rm --env=CR_TOKEN=${{ secrets.GITHUB_TOKEN }}
-          --volume=$(pwd)/.cr-release-packages:/.cr-release-packages
-          --volume=$(pwd)/.cr-index:/.cr-index
-          --entrypoint= quay.io/helmpack/chart-releaser cr
-          index --owner=camptocamp --git-repo=helm-mapserver --charts-repo=https://camptocamp.github.io/helm-mapserver
+          cr index --owner=camptocamp --git-repo=helm-mapserver --charts-repo=https://camptocamp.github.io/helm-mapserver
           --push --release-name-template='{{ .Version }}'
         if: github.event_name == 'push'
         #if: github.ref == 'refs/heads/master' && startsWith(github.event.head_commit.message, '[release] ')
