@@ -38,14 +38,16 @@ jobs:
           tar -xzf cr.tar.gz
           rm -f cr.tar.gz
           sudo mv cr /usr/bin
+        if: github.event_name == 'push'
       - run: >
           cr package mapserver
         if: github.event_name == 'push'
       - run: >
-          cr upload --owner=camptocamp --git-repo=helm-mapserver --commit=${{ github.sha }} --release-name-template='{{ .Version }}'
+          cr upload --owner=camptocamp --git-repo=helm-mapserver --commit=${{ github.sha }}
+          --release-name-template='{{ .Version }}' --token=${{ secret.token }}
         if: github.event_name == 'push'
       - run: >
           cr index --owner=camptocamp --git-repo=helm-mapserver --charts-repo=https://camptocamp.github.io/helm-mapserver
-          --push --release-name-template='{{ .Version }}'
+          --push --release-name-template='{{ .Version }}' --token=${{ secret.token }}
         if: github.event_name == 'push'
         #if: github.ref == 'refs/heads/master' && startsWith(github.event.head_commit.message, '[release] ')
