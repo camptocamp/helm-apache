@@ -27,13 +27,20 @@ jobs:
         run: c2cciutils-checks
 
       - uses: azure/setup-helm@v1
-      - run: helm lint charts/mapserver
-      - run: helm template test charts/mapserver
+      - run: helm lint mapserver
+      - run: helm template test mapserver
 
       - run: git config --global user.email ci@camptocamp.com
       - run: git config --global user.name CI
-      - name: Run chart-releaser
-        uses: helm/chart-releaser-action@v1.2.1
-        env:
-          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-        if: github.ref == 'refs/heads/master' && startsWith(github.event.head_commit.message, '[release] ')
+      - run: >
+          docker run --rm --env=CR_TOKEN=${{ secrets.GITHUB_TOKEN }} --volume=$(pwd):/charts quay.io/helmpack/chart-releaser
+          package mapserver --package-path=/charts/.cr-release-packages
+      - run: >
+          docker run --rm --env=CR_TOKEN=${{ secrets.GITHUB_TOKEN }} --volume=$(pwd):/charts quay.io/helmpack/chart-releaser
+          upload --owner=camptocamp --git-repo=helm-mapserver --commit=99f9a407f05588c089d67d93a0dc18fa89d0c497 \
+          --package-path=/charts/.cr-release-packages --release-name-template='{{ .Version }}'
+      - run: >
+          docker run --rm --env=CR_TOKEN=${{ secrets.GITHUB_TOKEN }} --volume=$(pwd):/charts quay.io/helmpack/chart-releaser
+          index --owner=camptocamp --git-repo=helm-mapserver --charts-repo=https://camptocamp.github.io/helm-mapserver --push
+          --token ${{ secrets.GITHUB_TOKEN }}
+        #if: github.ref == 'refs/heads/master' && startsWith(github.event.head_commit.message, '[release] ')
