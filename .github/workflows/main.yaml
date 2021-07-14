@@ -46,6 +46,8 @@ jobs:
           cr upload --owner=camptocamp --git-repo=helm-mapserver --commit=${{ github.sha }}
           --release-name-template='{{ .Version }}' --token=${{ secrets.GITHUB_TOKEN }}
         if: github.event_name == 'push'
+      - run: mkdir .cr-index
+        if: github.event_name == 'push'
       - run: >
           cr index --owner=camptocamp --git-repo=helm-mapserver --charts-repo=https://camptocamp.github.io/helm-mapserver
           --push --release-name-template='{{ .Version }}' --token=${{ secrets.GITHUB_TOKEN }}
