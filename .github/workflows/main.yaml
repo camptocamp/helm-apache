@@ -39,7 +39,7 @@ jobs:
       - run: >
           docker run --rm --env=CR_TOKEN=${{ secrets.GITHUB_TOKEN }} --volume=$(pwd):/charts --entrypoint=
           quay.io/helmpack/chart-releaser cr
-          upload --owner=camptocamp --git-repo=helm-mapserver --commit=${{ github.ref }}
+          upload --owner=camptocamp --git-repo=helm-mapserver --commit=${{ github.sha }}
           --package-path=/charts/.cr-release-packages --release-name-template='{{ .Version }}'
       - run: >
           docker run --rm --env=CR_TOKEN=${{ secrets.GITHUB_TOKEN }} --entrypoint=
