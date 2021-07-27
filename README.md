@@ -2,9 +2,9 @@
 
 With:
 
--   One config init container, the Mapfiles should de in `/etc/mapserver/`
--   One [Apache Exporter for Prometheus](https://github.com/Lusitaniae/apache_exporter) container
--   The [MapServer](https://github.com/camptocamp/docker-mapserver) container
+- One config init container, the Mapfiles should de in `/etc/mapserver/`
+- One [Apache Exporter for Prometheus](https://github.com/Lusitaniae/apache_exporter) container
+- The [MapServer](https://github.com/camptocamp/docker-mapserver) container
 
 Can be include in an other chart for `qgisserver` with e.g.:
 
