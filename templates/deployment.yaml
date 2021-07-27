@@ -1,4 +1,3 @@
-{{- if .Values.mapserver.enabled -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -6,7 +5,7 @@ metadata:
   labels:
 {{ include "mapserver.labels" . | indent 4 }}
 spec:
-  replicas: {{ .Values.mapserver.replicaCount }}
+  replicas: {{ .Values.replicaCount }}
   strategy:
     type: RollingUpdate
   selector:
@@ -23,22 +22,22 @@ spec:
     {{- end }}
       serviceAccountName: {{ template "mapserver.serviceAccountName" . }}
       securityContext:
-        {{- toYaml .Values.mapserver.podSecurityContext | nindent 8 }}
-      {{- if .Values.mapserver.config.enable }}
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- if .Values.config.enable }}
       initContainers:
         - name: mapserver-config
-          image: "{{ .Values.mapserver.config.image.repository }}:{{ .Values.mapserver.config.image.tag }}"
-          imagePullPolicy: {{ .Values.mapserver.image.pullPolicy }}
+          image: "{{ .Values.config.image.repository }}:{{ .Values.config.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           args: ['bash', '-c', 'cp -a /etc/mapserver/* /etc/mapserver-volume/']
           volumeMounts:
             - mountPath: /etc/mapserver-volume
               name: configs
           env:
-            {{- range $name, $value := .Values.mapserver.config.env }}
+            {{- range $name, $value := .Values.config.env }}
             - name: {{ $name | quote }}
               value: {{ $value | quote }}
             {{- end }}
-            {{- range $name, $value := .Values.mapserver.config.configMap }}
+            {{- range $name, $value := .Values.config.configMap }}
             - name: {{ $name | quote }}
               valueFrom:
                 configMapKeyRef:
@@ -47,20 +46,20 @@ spec:
             {{- end }}
           terminationMessagePolicy: FallbackToLogsOnError
           resources:
-            {{- toYaml .Values.mapserver.config.resources | nindent 12 }}
+            {{- toYaml .Values.config.resources | nindent 12 }}
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
-            {{- toYaml .Values.mapserver.securityContext | nindent 12 }}
-          image: "{{ .Values.mapserver.image.repository }}:{{ .Values.mapserver.image.tag }}"
-          imagePullPolicy: {{ .Values.mapserver.image.pullPolicy }}
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
-            {{- range $name, $value := .Values.mapserver.env }}
+            {{- range $name, $value := .Values.env }}
             - name: {{ $name | quote }}
               value: {{ $value | quote }}
             {{- end }}
-            {{- range $name, $value := .Values.mapserver.configMap }}
+            {{- range $name, $value := .Values.configMap }}
             - name: {{ $name | quote }}
               valueFrom:
                 configMapKeyRef:
@@ -83,13 +82,13 @@ spec:
             timeoutSeconds: 10
             periodSeconds: 20
           resources:
-            {{- toYaml .Values.mapserver.resources | nindent 12 }}
-        {{- if .Values.mapserver.apacheExporter.enabled -}}
+            {{- toYaml .Values.resources | nindent 12 }}
+        {{- if .Values.apacheExporter.enabled }}
         - name: apache-exporter
-          image: "{{ .Values.mapserver.apacheExporter.image.repository }}:{{ .Values.mapserver.apacheExporter.image.tag }}"
+          image: "{{ .Values.apacheExporter.image.repository }}:{{ .Values.apacheExporter.image.tag }}"
           securityContext:
-            {{- toYaml .Values.mapserver.securityContext | nindent 12 }}
-          imagePullPolicy: {{ .Values.mapserver.image.pullPolicy }}
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           args:
             - '--scrape_uri=http://{{ include "mapserver.fullname" . }}/server-status-remote?auto'
           terminationMessagePolicy: FallbackToLogsOnError
@@ -105,19 +104,19 @@ spec:
             timeoutSeconds: 10
             periodSeconds: 20
           resources:
-            {{- toYaml .Values.mapserver.apache_exporter.resources | nindent 12 }}
+            {{- toYaml .Values.apacheExporter.resources | nindent 12 }}
         {{- end }}
       volumes:
         - name: configs
           emptyDir: {}
-      {{- with .Values.mapserver.nodeSelector }}
+      {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       affinity:
-      {{-   if .service.affinity }}
-      {{      toYaml .service.affinity | indent 2 }}
-      {{-   else if .affinitySelector }}
+      {{-   if .Values.affinity }}
+      {{      toYaml .Values.affinity | indent 2 }}
+      {{-   else }}
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
           - labelSelector:
@@ -132,8 +131,7 @@ spec:
                 - {{ .Release.Name }}
             topologyKey: "kubernetes.io/hostname"
       {{- end }}
-    {{- with .Values.mapserver.tolerations }}
+    {{- with .Values.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
     {{- end }}
-{{- end }}
