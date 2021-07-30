@@ -1,4 +1,7 @@
-# [Kubernetes](https://kubernetes.io/) [HELM chart](https://helm.sh/) for [MapServer](mapserver.org/)
+# [Kubernetes](https://kubernetes.io/) [HELM chart](https://helm.sh/) for application hosted by [Apache httpd](https://httpd.apache.org/)
+
+The default config is for [MapServer](mapserver.org/) with the image
+[docker-mapserver](https://github.com/camptocamp/docker-mapserver)
 
 With:
 

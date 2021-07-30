@@ -1,11 +1,11 @@
 apiVersion: policy/v1beta1
 kind: PodDisruptionBudget
 metadata:
-  name: {{ template "mapserver.fullname" . }}
+  name: {{ template "apache.fullname" . }}
   labels:
-    {{- include "mapserver.selectorLabels" . | nindent 4 }}
+    {{- include "apache.selectorLabels" . | nindent 4 }}
 spec:
   maxUnavailable: 1
   selector:
     matchLabels:
-      {{- include "mapserver.selectorLabels" . | nindent 6 }}
+      {{- include "apache.selectorLabels" . | nindent 6 }}
