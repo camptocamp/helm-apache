@@ -1,38 +1,38 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "mapserver.fullname" . }}
+  name: {{ include "apache.fullname" . }}
   labels:
-{{ include "mapserver.labels" . | indent 4 }}
+{{ include "apache.labels" . | indent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   strategy:
     type: RollingUpdate
   selector:
     matchLabels:
-      {{- include "mapserver.selectorLabels" . | nindent 6 }}
+      {{- include "apache.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-      {{- include "mapserver.selectorLabels" . | nindent 8 }}
+      {{- include "apache.selectorLabels" . | nindent 8 }}
     spec:
     {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
     {{- end }}
-      serviceAccountName: {{ template "mapserver.serviceAccountName" . }}
+      serviceAccountName: {{ template "apache.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       {{- if .Values.config.enable }}
       initContainers:
-        - name: mapserver-config
+        - name: apache-config
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.config.image.repository }}:{{ .Values.config.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          args: ['bash', '-c', 'cp -a /etc/mapserver/* /etc/mapserver-volume/']
+          args: ['bash', '-c', 'cp -a {{ .Values.config.folder }}/* /etc/config-volume/']
           volumeMounts:
-            - mountPath: /etc/mapserver-volume
+            - mountPath: /etc/config-volume
               name: configs
           env:
             {{- range $name, $value := .Values.config.env }}
@@ -70,7 +70,7 @@ spec:
             {{- end }}
           terminationMessagePolicy: FallbackToLogsOnError
           volumeMounts:
-            - mountPath: /etc/mapserver
+            - mountPath: {{ .Values.config.folder }}
               name: configs
               readOnly: false
             - mountPath: /tmp
@@ -95,7 +95,7 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args:
-            - '--scrape_uri=http://{{ include "mapserver.fullname" . }}/server-status-remote?auto'
+            - '--scrape_uri=http://{{ include "apache.fullname" . }}/server-status-remote?auto'
           terminationMessagePolicy: FallbackToLogsOnError
           ports:
             - name: prometheus
@@ -131,7 +131,7 @@ spec:
               - key: app.kubernetes.io/name
                 operator: In
                 values:
-                - {{ include "mapserver.name" . }}
+                - {{ include "apache.name" . }}
               - key: app.kubernetes.io/instance
                 operator: In
                 values:
