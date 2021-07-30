@@ -8,14 +8,13 @@ fullnameOverride: ''
 imagePullSecrets: []
 replicaCount: 1
 
-env:
-  # We required a least on env or configMap
-  REQUIRED: ONE
-configMap: {}
+env: {}
 # Inject env from configmap
 # <env>:
 #   name: <configMap name>
 #   key: <configMap key>
+configMapEnv: {}
+secretEnv: {}
 
 image:
   repository: camptocamp/mapserver
@@ -28,14 +27,13 @@ config:
   image:
     repository:
     tag: master
-  env:
-    # We required a least on env or configMap
-    REQUIRED: ONE
-  configMap: {}
+  env: {}
   # Inject env from configmap
   # <env>:
   #   name: <configMap name>
   #   key: <configMap key>
+  configMapEnv: {}
+  secretEnv: {}
   resources: {}
 
 apacheExporter:

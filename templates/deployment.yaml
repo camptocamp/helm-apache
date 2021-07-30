@@ -34,18 +34,27 @@ spec:
           volumeMounts:
             - mountPath: /etc/config-volume
               name: configs
+          {{- if and ( not ( empty .Values.env ) ) ( not ( empty .Values.configMapEnv ) ) ( not ( empty .Values.secretEnv ) ) }}
           env:
             {{- range $name, $value := .Values.config.env }}
             - name: {{ $name | quote }}
               value: {{ $value | quote }}
             {{- end }}
-            {{- range $name, $value := .Values.config.configMap }}
+            {{- range $name, $value := .Values.config.configMapEnv }}
             - name: {{ $name | quote }}
               valueFrom:
                 configMapKeyRef:
                   name: {{ $value.name | quote }}
                   key: {{ $value.key | quote }}
             {{- end }}
+            {{- range $name, $value := .Values.config.secretEnv }}
+            - name: {{ $name | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $value.name | quote }}
+                  key: {{ $value.key | quote }}
+            {{- end }}
+          {{- end }}
           terminationMessagePolicy: FallbackToLogsOnError
           resources:
             {{- toYaml .Values.config.resources | nindent 12 }}
@@ -56,18 +65,27 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- if and ( not ( empty .Values.env ) ) ( not ( empty .Values.configMapEnv ) ) ( not ( empty .Values.secretEnv ) ) }}
           env:
             {{- range $name, $value := .Values.env }}
             - name: {{ $name | quote }}
               value: {{ $value | quote }}
             {{- end }}
-            {{- range $name, $value := .Values.configMap }}
+            {{- range $name, $value := .Values.configMapEnv }}
             - name: {{ $name | quote }}
               valueFrom:
                 configMapKeyRef:
                   name: {{ $value.name | quote }}
                   key: {{ $value.key | quote }}
             {{- end }}
+            {{- range $name, $value := .Values.config.secretEnv }}
+            - name: {{ $name | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $value.name | quote }}
+                  key: {{ $value.key | quote }}
+            {{- end }}
+          {{- end }}
           terminationMessagePolicy: FallbackToLogsOnError
           volumeMounts:
             - mountPath: {{ .Values.config.folder }}
