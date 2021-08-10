@@ -25,7 +25,7 @@ spec:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       {{- if .Values.config.enable }}
       initContainers:
-        - name: apache-config
+        - name: config
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.config.image.repository }}:{{ .Values.config.image.tag }}"
@@ -34,7 +34,7 @@ spec:
           volumeMounts:
             - mountPath: /etc/config-volume
               name: configs
-          {{- if and ( not ( empty .Values.env ) ) ( not ( empty .Values.configMapEnv ) ) ( not ( empty .Values.secretEnv ) ) }}
+          {{- if and ( not ( empty .Values.config.env ) ) ( not ( empty .Values.config.configMapEnv ) ) ( not ( empty .Values.config.secretEnv ) ) }}
           env:
             {{- range $name, $value := .Values.config.env }}
             - name: {{ $name | quote }}
