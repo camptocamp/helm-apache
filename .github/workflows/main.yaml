@@ -35,3 +35,6 @@ jobs:
       - uses: azure/setup-helm@v1
       - run: helm lint .
       - run: helm template test .
+
+      - name: Publish
+        run: c2cciutils-publish
