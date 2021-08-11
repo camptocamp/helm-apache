@@ -23,12 +23,16 @@ spec:
       serviceAccountName: {{ template "apache.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
-      {{- if .Values.config.enable }}
+      {{- if .Values.config.enabled }}
       initContainers:
         - name: config
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
+          {{- if .Values.config.image.sha }}
+          image: "{{ .Values.config.image.repository }}@sha256:{{ .Values.config.image.sha }}"
+          {{- else }}
           image: "{{ .Values.config.image.repository }}:{{ .Values.config.image.tag }}"
+          {{- end }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args: ['bash', '-c', 'cp -a {{ .Values.config.folder }}/* /etc/config-volume/']
           volumeMounts:
@@ -63,7 +67,11 @@ spec:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
+          {{- if .Values.image.sha }}
+          image: "{{ .Values.image.repository }}@sha256:{{ .Values.image.sha }}"
+          {{- else }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          {{- end }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           {{- if and ( not ( empty .Values.env ) ) ( not ( empty .Values.configMapEnv ) ) ( not ( empty .Values.secretEnv ) ) }}
           env:
@@ -108,7 +116,11 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
         {{- if .Values.apacheExporter.enabled }}
         - name: apache-exporter
+          {{- if .Values.apacheExporter.image.sha }}
+          image: "{{ .Values.apacheExporter.image.repository }}@sha256:{{ .Values.apacheExporter.image.sha }}"
+          {{- else }}
           image: "{{ .Values.apacheExporter.image.repository }}:{{ .Values.apacheExporter.image.tag }}"
+          {{- end }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
