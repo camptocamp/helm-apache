@@ -18,7 +18,8 @@ secretEnv: {}
 
 image:
   repository: camptocamp/mapserver
-  tag: master
+  tag: latest
+  sha:
   pullPolicy: IfNotPresent
 
 config:
@@ -26,7 +27,8 @@ config:
   folder: /etc/apache
   image:
     repository:
-    tag: master
+    sha:
+    tag: latest
   env: {}
   # Inject env from configmap
   # <env>:
@@ -41,6 +43,7 @@ apacheExporter:
   image:
     repository: quay.io/lusitaniae/apache-exporter
     # repository: bitnami/apache-exporter
+    sha:
     tag: 0.7.0
   resources: {}
 
