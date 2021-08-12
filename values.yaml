@@ -21,6 +21,8 @@ replicaCount: 1
 # <env>:
 #   type: none
 env: {}
+# ConfigMap or secret from env name override
+configMapNameOverride: {}
 
 image:
   repository: camptocamp/mapserver
@@ -36,6 +38,7 @@ config:
     sha:
     tag: latest
   env: {}
+  configMapNameOverride: {}
   resources: {}
 
 apacheExporter:
