@@ -8,13 +8,19 @@ fullnameOverride: ''
 imagePullSecrets: []
 replicaCount: 1
 
-env: {}
-# Inject env from configmap
+# Direct env value:
 # <env>:
+#   type: value # Default
+#   value: <value>
+# Env from ConfigMap (for secret type = secret)
+# <env>:
+#   type: configMap
 #   name: <configMap name>
 #   key: <configMap key>
-configMapEnv: {}
-secretEnv: {}
+# Ignore en env:
+# <env>:
+#   type: none
+env: {}
 
 image:
   repository: camptocamp/mapserver
@@ -30,12 +36,6 @@ config:
     sha:
     tag: latest
   env: {}
-  # Inject env from configmap
-  # <env>:
-  #   name: <configMap name>
-  #   key: <configMap key>
-  configMapEnv: {}
-  secretEnv: {}
   resources: {}
 
 apacheExporter:
