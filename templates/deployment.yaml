@@ -1,93 +1,31 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "apache.fullname" . }}
-  labels:
-{{ include "apache.labels" . | indent 4 }}
+  name: {{ include "common.fullname" ( dict "root" . "service" .Values ) }}
+  labels: {{ include "common.labels" ( dict "root" . "service" .Values ) | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   strategy:
     type: RollingUpdate
   selector:
-    matchLabels:
-      {{- include "apache.selectorLabels" . | nindent 6 }}
+    matchLabels: {{- include "common.selectorLabels" ( dict "root" . "service" .Values ) | nindent 6 }}
   template:
     metadata:
-      labels:
-      {{- include "apache.selectorLabels" . | nindent 8 }}
+      labels: {{- include "common.selectorLabels" ( dict "root" . "service" .Values ) | nindent 8 }}
     spec:
-    {{- with .Values.imagePullSecrets }}
-      imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
-    {{- end }}
-      serviceAccountName: {{ template "apache.serviceAccountName" . }}
-      securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- include "common.podConfig" ( dict "root" . "service" .Values ) | nindent 6 }}
       {{- if .Values.config.enabled }}
       initContainers:
         - name: config
-          securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          {{- if .Values.config.image.sha }}
-          image: "{{ .Values.config.image.repository }}@sha256:{{ .Values.config.image.sha }}"
-          {{- else }}
-          image: "{{ .Values.config.image.repository }}:{{ .Values.config.image.tag }}"
-          {{- end }}
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- include "common.containerConfig" ( dict "root" . "container" .Values.config ) | nindent 10 }}
           args: ['bash', '-c', 'cp -a {{ .Values.config.folder }}/* /etc/config-volume/']
           volumeMounts:
             - mountPath: /etc/config-volume
               name: configs
-          {{- if not ( empty .Values.config.env ) }}
-          env:
-            {{- range $name, $value := .Values.env }}
-              {{- if eq ( default "value" $value.type ) "value" }}
-              - name: {{ $name | quote }}
-                value: {{ $value.value | quote }}
-              {{- else }}
-              {{- if ne $value.type "none" }}
-              - name: {{ $name | quote }}
-                valueFrom:
-                  {{ $value.type }}KeyRef:
-                    name: {{ default $value.name ( get .Values.config.configMapNameOverride $value.name ) | quote }}
-                    key: {{ $value.key | quote }}
-              {{- end }}
-              {{- end }}
-            {{- end }}
-          {{- end }}
-          terminationMessagePolicy: FallbackToLogsOnError
-          resources:
-            {{- toYaml .Values.config.resources | nindent 12 }}
       {{- end }}
       containers:
-        - name: {{ .Chart.Name }}
-          securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          {{- if .Values.image.sha }}
-          image: "{{ .Values.image.repository }}@sha256:{{ .Values.image.sha }}"
-          {{- else }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          {{- end }}
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          {{- if not ( empty .Values.env ) }}
-          env:
-            {{ $configMapNameOverride := .Values.configMapNameOverride }}
-            {{- range $name, $value := .Values.env }}
-              {{- if eq ( default "value" $value.type ) "value" }}
-              - name: {{ $name | quote }}
-                value: {{ $value.value | quote }}
-              {{- else }}
-              {{- if ne $value.type "none" }}
-              - name: {{ $name | quote }}
-                valueFrom:
-                  {{ $value.type }}KeyRef:
-                    name: {{ default $value.name ( get $configMapNameOverride $value.name ) | quote }}
-                    key: {{ $value.key | quote }}
-              {{- end }}
-              {{- end }}
-            {{- end }}
-          {{- end }}
-          terminationMessagePolicy: FallbackToLogsOnError
+        - name: apache
+          {{- include "common.containerConfig" ( dict "root" . "container" .Values ) | nindent 10 }}
           volumeMounts:
             - mountPath: {{ .Values.config.folder }}
               name: configs
@@ -98,28 +36,23 @@ spec:
             - name: http
               containerPort: 8080
               protocol: TCP
+          {{- with .Values.livenessProbe }}
+          livenessProbe:
+          {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.readinessProbe }}
           readinessProbe:
-            httpGet:
-              path: /
-              port: http
-            initialDelaySeconds: 5
-            timeoutSeconds: 10
-            periodSeconds: 20
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+          {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.readinessProbe }}
+          startupProbe:
+          {{- toYaml . | nindent 12 }}
+          {{- end }}
         {{- if .Values.apacheExporter.enabled }}
         - name: apache-exporter
-          {{- if .Values.apacheExporter.image.sha }}
-          image: "{{ .Values.apacheExporter.image.repository }}@sha256:{{ .Values.apacheExporter.image.sha }}"
-          {{- else }}
-          image: "{{ .Values.apacheExporter.image.repository }}:{{ .Values.apacheExporter.image.tag }}"
-          {{- end }}
-          securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- include "common.containerConfig" ( dict "root" . "container" .Values.apacheExporter ) | nindent 10 }}
           args:
-            - '--scrape_uri=http://{{ include "apache.fullname" . }}/server-status-remote?auto'
-          terminationMessagePolicy: FallbackToLogsOnError
+            - '--scrape_uri=http://{{ include "common.fullname" ( dict "root" . "service" .Values ) }}/server-status-remote?auto'
           ports:
             - name: prometheus
               containerPort: 9117
@@ -131,37 +64,9 @@ spec:
             initialDelaySeconds: 5
             timeoutSeconds: 10
             periodSeconds: 20
-          resources:
-            {{- toYaml .Values.apacheExporter.resources | nindent 12 }}
         {{- end }}
       volumes:
         - name: configs
           emptyDir: {}
         - name: tmp-volume
           emptyDir: {}
-      {{- with .Values.nodeSelector }}
-      nodeSelector:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      affinity:
-      {{-   if .Values.affinity }}
-      {{      toYaml .Values.affinity | indent 2 }}
-      {{-   else }}
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-          - labelSelector:
-              matchExpressions:
-              - key: app.kubernetes.io/name
-                operator: In
-                values:
-                - {{ include "apache.name" . }}
-              - key: app.kubernetes.io/instance
-                operator: In
-                values:
-                - {{ .Release.Name }}
-            topologyKey: "kubernetes.io/hostname"
-      {{- end }}
-    {{- with .Values.tolerations }}
-      tolerations:
-        {{- toYaml . | nindent 8 }}
-    {{- end }}

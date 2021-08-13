@@ -29,9 +29,25 @@ dependencies:
 
 ```
 qgisserver:
-  enabled: True
+  enabled: true
   replicaCount: 2
   image:
     repository: camptocamp/qgis-server
     tag: 3.20
+  env: {}
+  resources: {}
+  readinessProbe:
+    httpGet:
+      path: /?SERVICE=WMS&REQUEST=GetCapabilities
+      port: http
+    initialDelaySeconds: 5
+    timeoutSeconds: 300
+  config:
+    enabled: true
+    image:
+      repository: camptocamp/my-config-image
+      tag: latest
+    env: {}
+    resources: {}
+    folder: /etc/qgisserver
 ```
