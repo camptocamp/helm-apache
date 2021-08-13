@@ -1,0 +1,195 @@
+---
+# Source: apache/templates/pdb.yaml
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: test-apache
+  labels:
+    app.kubernetes.io/name: apache
+    app.kubernetes.io/instance: test
+    app.kubernetes.io/component: main
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: apache
+      app.kubernetes.io/instance: test
+      app.kubernetes.io/component: main
+---
+# Source: apache/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: qgis
+  labels:
+    helm.sh/chart: apache-0.1.0
+    app.kubernetes.io/version: "1.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: apache
+    app.kubernetes.io/instance: test
+    app.kubernetes.io/component: main
+---
+# Source: apache/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: test-apache
+  labels:
+    helm.sh/chart: apache-0.1.0
+    app.kubernetes.io/version: "1.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: apache
+    app.kubernetes.io/instance: test
+    app.kubernetes.io/component: main
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+    - port: 9117
+      targetPort: prometheus
+      protocol: TCP
+      name: prometheus
+  selector:
+    app.kubernetes.io/name: apache
+    app.kubernetes.io/instance: test
+    app.kubernetes.io/component: main
+---
+# Source: apache/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-apache
+  labels:
+    helm.sh/chart: apache-0.1.0
+    app.kubernetes.io/version: "1.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: apache
+    app.kubernetes.io/instance: test
+    app.kubernetes.io/component: main
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: apache
+      app.kubernetes.io/instance: test
+      app.kubernetes.io/component: main
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: apache
+        app.kubernetes.io/instance: test
+        app.kubernetes.io/component: main
+    spec:
+
+      serviceAccountName: qgis
+      securityContext:
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
+        runAsUser: 33
+      affinity:
+        {}
+      initContainers:
+        - name: config
+          securityContext:
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 33
+          image: "camptocamp/my-config-image:latest"
+          imagePullPolicy: IfNotPresent
+          terminationMessagePolicy: FallbackToLogsOnError
+          resources:
+            {}
+          args: ['bash', '-c', 'cp -a /etc/qgisserver/* /etc/config-volume/']
+          volumeMounts:
+            - mountPath: /etc/config-volume
+              name: configs
+      containers:
+        - name: apache
+          securityContext:
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 33
+          image: "camptocamp/qgis-server:3.2"
+          imagePullPolicy: IfNotPresent
+          terminationMessagePolicy: FallbackToLogsOnError
+          resources:
+            {}
+          volumeMounts:
+            - mountPath: /etc/qgisserver
+              name: configs
+              readOnly: false
+            - mountPath: /tmp
+              name: tmp-volume
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /?SERVICE=WMS&REQUEST=GetCapabilities
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 20
+            timeoutSeconds: 300
+          startupProbe:
+            httpGet:
+              path: /?SERVICE=WMS&REQUEST=GetCapabilities
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 20
+            timeoutSeconds: 300
+        - name: apache-exporter
+          securityContext:
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 33
+          image: "quay.io/lusitaniae/apache-exporter:0.7.0"
+          imagePullPolicy: IfNotPresent
+          terminationMessagePolicy: FallbackToLogsOnError
+          resources:
+            {}
+          args:
+            - '--scrape_uri=http://test-apache/server-status-remote?auto'
+          ports:
+            - name: prometheus
+              containerPort: 9117
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: prometheus
+            initialDelaySeconds: 5
+            timeoutSeconds: 10
+            periodSeconds: 20
+      volumes:
+        - name: configs
+          emptyDir: {}
+        - name: tmp-volume
+          emptyDir: {}
+---
+# Source: apache/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: test-apache
+  labels:
+    helm.sh/chart: apache-0.1.0
+    app.kubernetes.io/version: "1.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: apache
+    app.kubernetes.io/instance: test
+    app.kubernetes.io/component: main
+spec:
+  rules:
+    - host: "qgis.local"
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: test-apache
+              servicePort: 80

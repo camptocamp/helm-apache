@@ -8,21 +8,19 @@ fullnameOverride: ''
 imagePullSecrets: []
 replicaCount: 1
 
-# Direct env value:
-# <env>:
-#   type: value # Default
-#   value: <value>
-# Env from ConfigMap (for secret type = secret)
-# <env>:
-#   type: configMap
-#   name: <configMap name>
-#   key: <configMap key>
-# Ignore en env:
-# <env>:
-#   type: none
 env: {}
 # ConfigMap or secret from env name override
 configMapNameOverride: {}
+
+livenessProbe:
+readinessProbe:
+  httpGet:
+    path: /
+    port: http
+  initialDelaySeconds: 5
+  timeoutSeconds: 10
+  periodSeconds: 20
+startupProbe:
 
 image:
   repository: camptocamp/mapserver
