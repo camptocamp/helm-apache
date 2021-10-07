@@ -36,10 +36,33 @@ jobs:
       - run: helm dependency update .
       - run: helm lint .
       - run: helm lint --values=tests/qgis.yaml .
-      - run: helm template --namespace=default test . > tests/actual.yaml
-      - run: diff --ignore-trailing-space tests/actual.yaml tests/expected.yaml
-      - run: helm template --namespace=default --values=tests/qgis.yaml test . > tests/qgis-actual.yaml
+      - run: helm template --namespace=default --values=tests/mapserver.yaml mapserver . > tests/mapserver-actual.yaml
+      - run: diff --ignore-trailing-space tests/mapserver-actual.yaml tests/mapserver-expected.yaml
+      - run: helm template --namespace=default --values=tests/qgis.yaml qgis . > tests/qgis-actual.yaml
       - run: diff --ignore-trailing-space tests/qgis-actual.yaml tests/qgis-expected.yaml
+
+      # Setup k3s/k3d
+      - run: wget -q -O - https://raw.githubusercontent.com/rancher/k3d/main/install.sh | TAG=v4.4.8 bash
+      - run: k3d --version
+      - run: >-
+          k3d cluster create test-cluster-1
+          --no-lb
+          --no-hostip
+          --no-rollback
+          --k3s-server-arg "--no-deploy=traefik,servicelb,metrics-server"
+      - run: kubectl version
+      #
+      - run: kubectl apply -f tests/mapserver-expected.yaml
+      - run: ci/k8s-wait-deployed
+      - run: ci/k8s-logs
+        if: always()
+      - run: kubectl delete -f tests/mapserver-expected.yaml || true
+
+      - run: kubectl apply -f tests/qgis-expected.yaml
+      - run: ci/k8s-wait-deployed
+      - run: ci/k8s-logs
+        if: always()
+      - run: kubectl delete -f tests/qgis-expected.yaml || true
 
       - name: Publish
         run: c2cciutils-publish

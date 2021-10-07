@@ -3,17 +3,17 @@
 apiVersion: policy/v1beta1
 kind: PodDisruptionBudget
 metadata:
-  name: test-apache
+  name: qgis-apache
   labels:
     app.kubernetes.io/name: apache
-    app.kubernetes.io/instance: test
+    app.kubernetes.io/instance: qgis
     app.kubernetes.io/component: main
 spec:
   maxUnavailable: 1
   selector:
     matchLabels:
       app.kubernetes.io/name: apache
-      app.kubernetes.io/instance: test
+      app.kubernetes.io/instance: qgis
       app.kubernetes.io/component: main
 ---
 # Source: apache/templates/serviceaccount.yaml
@@ -26,20 +26,20 @@ metadata:
     app.kubernetes.io/version: "1.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: apache
-    app.kubernetes.io/instance: test
+    app.kubernetes.io/instance: qgis
     app.kubernetes.io/component: main
 ---
 # Source: apache/templates/service.yaml
 apiVersion: v1
 kind: Service
 metadata:
-  name: test-apache
+  name: qgis-apache
   labels:
     helm.sh/chart: apache-0.1.0
     app.kubernetes.io/version: "1.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: apache
-    app.kubernetes.io/instance: test
+    app.kubernetes.io/instance: qgis
     app.kubernetes.io/component: main
 spec:
   type: ClusterIP
@@ -54,20 +54,20 @@ spec:
       name: prometheus
   selector:
     app.kubernetes.io/name: apache
-    app.kubernetes.io/instance: test
+    app.kubernetes.io/instance: qgis
     app.kubernetes.io/component: main
 ---
 # Source: apache/templates/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: test-apache
+  name: qgis-apache
   labels:
     helm.sh/chart: apache-0.1.0
     app.kubernetes.io/version: "1.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: apache
-    app.kubernetes.io/instance: test
+    app.kubernetes.io/instance: qgis
     app.kubernetes.io/component: main
 spec:
   replicas: 2
@@ -76,19 +76,18 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/name: apache
-      app.kubernetes.io/instance: test
+      app.kubernetes.io/instance: qgis
       app.kubernetes.io/component: main
   template:
     metadata:
       labels:
         app.kubernetes.io/name: apache
-        app.kubernetes.io/instance: test
+        app.kubernetes.io/instance: qgis
         app.kubernetes.io/component: main
     spec:
 
       serviceAccountName: qgis
       securityContext:
-        readOnlyRootFilesystem: true
         runAsNonRoot: true
         runAsUser: 33
       affinity:
@@ -96,11 +95,21 @@ spec:
       initContainers:
         - name: config
           securityContext:
-            readOnlyRootFilesystem: true
             runAsNonRoot: true
             runAsUser: 33
-          image: "camptocamp/my-config-image:latest"
+          image: "camptocamp/geomapfishdemo-config:prod-2-7"
           imagePullPolicy: IfNotPresent
+          env:
+              - name: "PGSCHEMA"
+                value: "main"
+              - name: "QGIS_PROJECT_FILE"
+                value: "/etc/qgisserver/project.qgz"
+              - name: "VISIBLE_ENTRY_POINT"
+                value: "/"
+              - name: "VISIBLE_WEB_HOST"
+                value: "example.com"
+              - name: "VISIBLE_WEB_PROTOCOL"
+                value: "https"
           terminationMessagePolicy: FallbackToLogsOnError
           resources:
             {}
@@ -111,14 +120,14 @@ spec:
       containers:
         - name: apache
           securityContext:
-            readOnlyRootFilesystem: true
             runAsNonRoot: true
             runAsUser: 33
           image: "camptocamp/qgis-server:3.2"
           imagePullPolicy: IfNotPresent
           terminationMessagePolicy: FallbackToLogsOnError
           resources:
-            {}
+            limits:
+              memory: 1Gi
           volumeMounts:
             - mountPath: /etc/qgisserver
               name: configs
@@ -145,16 +154,15 @@ spec:
             timeoutSeconds: 300
         - name: apache-exporter
           securityContext:
-            readOnlyRootFilesystem: true
             runAsNonRoot: true
             runAsUser: 33
-          image: "quay.io/lusitaniae/apache-exporter:0.7.0"
+          image: "quay.io/lusitaniae/apache-exporter:v0.10.1"
           imagePullPolicy: IfNotPresent
           terminationMessagePolicy: FallbackToLogsOnError
           resources:
             {}
           args:
-            - '--scrape_uri=http://test-apache/server-status-remote?auto'
+            - '--scrape_uri=http://qgis-apache/server-status-remote?auto'
           ports:
             - name: prometheus
               containerPort: 9117
@@ -176,13 +184,13 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: test-apache
+  name: qgis-apache
   labels:
     helm.sh/chart: apache-0.1.0
     app.kubernetes.io/version: "1.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: apache
-    app.kubernetes.io/instance: test
+    app.kubernetes.io/instance: qgis
     app.kubernetes.io/component: main
 spec:
   rules:
@@ -190,6 +198,9 @@ spec:
       http:
         paths:
           - path: /
+            pathType: Prefix
             backend:
-              serviceName: test-apache
-              servicePort: 80
+              service:
+                name: qgis-apache
+                port:
+                  number: 80

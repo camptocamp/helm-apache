@@ -1,0 +1,36 @@
+#!/bin/bash -eu
+
+kubectl config set-context --current --namespace=default
+
+echo ::group::Events
+kubectl get events
+echo ::endgroup::
+
+echo ::group::Deployments
+kubectl get deployments --output=wide
+echo ::endgroup::
+
+echo ::group::Pods
+kubectl get pods --output=wide
+echo ::endgroup::
+
+for name in $(kubectl get pods --output=name)
+do
+  echo ::group::$name: Describe
+  kubectl describe $name
+  echo ::endgroup::
+
+  for container in $(kubectl get ${name} --output=jsonpath='{.spec.initContainers[*].name}')
+  do
+    echo ::group::$name $container: Logs
+    kubectl logs $name $container || true
+    echo ::endgroup::
+  done
+
+  for container in $(kubectl get ${name} --output=jsonpath='{.spec.containers[*].name}')
+  do
+    echo ::group::$name $container: Logs
+    kubectl logs $name $container || true
+    echo ::endgroup::
+  done
+done

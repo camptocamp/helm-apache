@@ -3,30 +3,30 @@
 apiVersion: policy/v1beta1
 kind: PodDisruptionBudget
 metadata:
-  name: test-apache
+  name: mapserver-apache
   labels:
     app.kubernetes.io/name: apache
-    app.kubernetes.io/instance: test
+    app.kubernetes.io/instance: mapserver
     app.kubernetes.io/component: main
 spec:
   maxUnavailable: 1
   selector:
     matchLabels:
       app.kubernetes.io/name: apache
-      app.kubernetes.io/instance: test
+      app.kubernetes.io/instance: mapserver
       app.kubernetes.io/component: main
 ---
 # Source: apache/templates/service.yaml
 apiVersion: v1
 kind: Service
 metadata:
-  name: test-apache
+  name: mapserver-apache
   labels:
     helm.sh/chart: apache-0.1.0
     app.kubernetes.io/version: "1.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: apache
-    app.kubernetes.io/instance: test
+    app.kubernetes.io/instance: mapserver
     app.kubernetes.io/component: main
 spec:
   type: ClusterIP
@@ -41,20 +41,20 @@ spec:
       name: prometheus
   selector:
     app.kubernetes.io/name: apache
-    app.kubernetes.io/instance: test
+    app.kubernetes.io/instance: mapserver
     app.kubernetes.io/component: main
 ---
 # Source: apache/templates/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: test-apache
+  name: mapserver-apache
   labels:
     helm.sh/chart: apache-0.1.0
     app.kubernetes.io/version: "1.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: apache
-    app.kubernetes.io/instance: test
+    app.kubernetes.io/instance: mapserver
     app.kubernetes.io/component: main
 spec:
   replicas: 1
@@ -63,19 +63,18 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/name: apache
-      app.kubernetes.io/instance: test
+      app.kubernetes.io/instance: mapserver
       app.kubernetes.io/component: main
   template:
     metadata:
       labels:
         app.kubernetes.io/name: apache
-        app.kubernetes.io/instance: test
+        app.kubernetes.io/instance: mapserver
         app.kubernetes.io/component: main
     spec:
 
       serviceAccountName: default
       securityContext:
-        readOnlyRootFilesystem: true
         runAsNonRoot: true
         runAsUser: 33
       affinity:
@@ -83,7 +82,6 @@ spec:
       containers:
         - name: apache
           securityContext:
-            readOnlyRootFilesystem: true
             runAsNonRoot: true
             runAsUser: 33
           image: "camptocamp/mapserver:latest"
@@ -117,16 +115,15 @@ spec:
             timeoutSeconds: 10
         - name: apache-exporter
           securityContext:
-            readOnlyRootFilesystem: true
             runAsNonRoot: true
             runAsUser: 33
-          image: "quay.io/lusitaniae/apache-exporter:0.7.0"
+          image: "quay.io/lusitaniae/apache-exporter:v0.10.1"
           imagePullPolicy: IfNotPresent
           terminationMessagePolicy: FallbackToLogsOnError
           resources:
             {}
           args:
-            - '--scrape_uri=http://test-apache/server-status-remote?auto'
+            - '--scrape_uri=http://mapserver-apache/server-status-remote?auto'
           ports:
             - name: prometheus
               containerPort: 9117
