@@ -11,8 +11,6 @@ readinessProbe:
     port: http
   initialDelaySeconds: 5
   timeoutSeconds: 300
-env: {}
-resources: {}
 config:
   enabled: true
   image:
@@ -26,7 +24,7 @@ ingress:
   hosts:
     - host: qgis.local
       paths:
-      - /
+        - /
 serviceAccount:
   create: true
   name: qgis
