@@ -100,8 +100,22 @@ spec:
           image: "camptocamp/geomapfishdemo-config:prod-2-7"
           imagePullPolicy: IfNotPresent
           env:
+              - name: "PGDATABASE"
+                value: "postgres"
+              - name: "PGHOST"
+                value: "test-pg-postgresql"
+              - name: "PGHOST_SLAVE"
+                value: "test-pg-postgresql"
+              - name: "PGPASSWORD"
+                value: "mySuperTestingPassword"
+              - name: "PGPORT"
+                value: "5432"
+              - name: "PGPORT_SLAVE"
+                value: "5432"
               - name: "PGSCHEMA"
                 value: "main"
+              - name: "PGUSER"
+                value: "postgres"
               - name: "QGIS_PROJECT_FILE"
                 value: "/etc/qgisserver/project.qgz"
               - name: "VISIBLE_ENTRY_POINT"
@@ -122,8 +136,11 @@ spec:
           securityContext:
             runAsNonRoot: true
             runAsUser: 33
-          image: "camptocamp/qgis-server:3.2"
+          image: "camptocamp/qgis-server:3.20"
           imagePullPolicy: IfNotPresent
+          env:
+              - name: "QGIS_PROJECT_FILE"
+                value: "/etc/qgisserver/project.qgz"
           terminationMessagePolicy: FallbackToLogsOnError
           resources:
             limits:

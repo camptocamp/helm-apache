@@ -2,8 +2,10 @@ enabled: true
 replicaCount: 2
 image:
   repository: camptocamp/qgis-server
-  tag: 3.20
-env: {}
+  tag: "3.20"
+env:
+  QGIS_PROJECT_FILE:
+    value: "/etc/qgisserver/project.qgz"
 resources:
   limits:
     memory: 1Gi
@@ -21,14 +23,28 @@ config:
     repository: camptocamp/geomapfishdemo-config
     tag: prod-2-7
   env:
+    PGSCHEMA:
+      value: main
     VISIBLE_ENTRY_POINT:
       value: /
     VISIBLE_WEB_PROTOCOL:
       value: https
     VISIBLE_WEB_HOST:
       value: example.com
-    PGSCHEMA:
-      value: main
+    PGHOST:
+      value: test-pg-postgresql
+    PGHOST_SLAVE:
+      value: test-pg-postgresql
+    PGPORT:
+      value: "5432"
+    PGPORT_SLAVE:
+      value: "5432"
+    PGDATABASE:
+      value: postgres
+    PGPASSWORD:
+      value: mySuperTestingPassword
+    PGUSER:
+      value: postgres
     QGIS_PROJECT_FILE:
       value: /etc/qgisserver/project.qgz
   resources: {}

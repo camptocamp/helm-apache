@@ -9,17 +9,12 @@ from lib import check_deployment_status, check_pod_status
 
 
 def main() -> None:
+    labels = sys.argv[1]
     for _ in range(20):
         time.sleep(10)
         success = True
-        deployments = subprocess.run(
-            ["kubectl", "get", "deployments", "--output=json"],
-            stdout=subprocess.PIPE,
-            check=True,
-        )
-        success &= check_deployment_status(json.loads(deployments.stdout))
         pods = subprocess.run(
-            ["kubectl", "get", "pods", "--output=json"],
+            ["kubectl", "get", "pods", "--output=json", "-l", labels],
             stdout=subprocess.PIPE,
             check=True,
         )
