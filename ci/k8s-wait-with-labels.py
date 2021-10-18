@@ -20,8 +20,6 @@ def main() -> None:
         )
         success &= check_pod_status(json.loads(pods.stdout))
         if success:
-            # FIXME: maybe there is a more elegant solution with PG...
-            time.sleep(10)
             sys.exit(0)
     sys.exit(1)
 

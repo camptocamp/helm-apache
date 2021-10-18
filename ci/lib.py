@@ -64,6 +64,9 @@ def check_pod_status(pods):
                     status_message_long = status["lastState"]["terminated"]["message"]
                 status_message = status_message.split("\n")[0]
                 status_message = status_message.strip()
+                if status_message == "Completed":
+                    print("Container successfully completed")
+                    return True
                 print(f'::group::Container not ready in {pod["metadata"]["name"]}: {status_message}')
                 if status_message_long != status_message:
                     print(status_message_long)
