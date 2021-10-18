@@ -51,10 +51,6 @@ def check_pod_status(pods):
             if status["name"] == "sleep" and not good:
                 good = True
 
-            # Ignore on QGIS server
-            if pod["metadata"]["name"].startswith("qgis-apache-"):
-                return True
-
             if not good:
                 waiting = status["state"].get("waiting")
                 terminated = status["state"].get("terminated")
