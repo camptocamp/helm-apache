@@ -32,14 +32,39 @@ jobs:
       - name: Checks
         run: c2cciutils-checks
 
-      - uses: azure/setup-helm@v1
+      - name: Install helm
+        uses: azure/setup-helm@v1
       - run: helm dependency update .
       - run: helm lint .
       - run: helm lint --values=tests/qgis.yaml .
-      - run: helm template --namespace=default test . > tests/actual.yaml
-      - run: diff --ignore-trailing-space tests/actual.yaml tests/expected.yaml
-      - run: helm template --namespace=default --values=tests/qgis.yaml test . > tests/qgis-actual.yaml
+      - run: helm template --namespace=default --values=tests/mapserver.yaml mapserver . > tests/mapserver-actual.yaml
+      - run: diff --ignore-trailing-space tests/mapserver-actual.yaml tests/mapserver-expected.yaml
+      - run: helm template --namespace=default --values=tests/qgis.yaml qgis . > tests/qgis-actual.yaml
       - run: diff --ignore-trailing-space tests/qgis-actual.yaml tests/qgis-expected.yaml
+
+      - name: Setup k3s/k3d
+        run: c2cciutils-k8s-install
+
+      - name: Launch MapServer
+        run: kubectl apply -f tests/mapserver-expected.yaml
+      - run: c2cciutils-k8s-wait
+      - run: c2cciutils-k8s-logs
+        if: always()
+      - run: kubectl delete -f tests/mapserver-expected.yaml || true
+
+      - name: Create a test-pg database
+        run: c2cciutils-k8s-db --script=tests/demo_schema.sql
+
+      - name: Launch QGIS Server
+        run: kubectl apply -f tests/qgis-expected.yaml
+      - run: c2cciutils-k8s-wait
+      - run: c2cciutils-k8s-logs
+        if: always()
+      - run: kubectl delete -f tests/qgis-expected.yaml || true
+
+      - name: Clean the database
+        run: c2cciutils-k8s-db --cleanup
+        if: always()
 
       - name: Publish
         run: c2cciutils-publish

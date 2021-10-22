@@ -2,29 +2,71 @@ enabled: true
 replicaCount: 2
 image:
   repository: camptocamp/qgis-server
-  tag: 3.20
-env: {}
-resources: {}
+  tag: '3.20'
+env:
+  QGIS_PROJECT_FILE:
+    value: '/etc/qgisserver/project.qgz'
+resources:
+  limits:
+    memory: 1Gi
+
 readinessProbe:
   httpGet:
     path: /?SERVICE=WMS&REQUEST=GetCapabilities
     port: http
   initialDelaySeconds: 5
   timeoutSeconds: 300
+
 config:
   enabled: true
   image:
-    repository: camptocamp/my-config-image
-    tag: latest
-  env: {}
+    repository: camptocamp/geomapfishdemo-config
+    tag: prod-2-7
+  env:
+    PGSCHEMA:
+      value: main
+    VISIBLE_ENTRY_POINT:
+      value: /
+    VISIBLE_WEB_PROTOCOL:
+      value: https
+    VISIBLE_WEB_HOST:
+      value: example.com
+    PGHOST:
+      value: test-pg-postgresql
+    PGHOST_SLAVE:
+      value: test-pg-postgresql
+    PGPORT:
+      value: '5432'
+    PGPORT_SLAVE:
+      value: '5432'
+    PGDATABASE:
+      value: postgres
+    PGPASSWORD:
+      value: mySuperTestingPassword
+    PGUSER:
+      value: postgres
+    QGIS_PROJECT_FILE:
+      value: /etc/qgisserver/project.qgz
+    QGIS_SERVER_IGNORE_BAD_LAYERS:
+      value: 'TRUE'
   resources: {}
   folder: /etc/qgisserver
+
+apacheExporter:
+  image:
+    tag: v0.10.1
+
 ingress:
   enabled: true
   hosts:
     - host: qgis.local
       paths:
         - /
+
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 33 # www-data
+
 serviceAccount:
   create: true
   name: qgis
