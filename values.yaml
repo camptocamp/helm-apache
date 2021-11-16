@@ -11,6 +11,7 @@ replicaCount: 1
 env: {}
 # ConfigMap or secret from env name override
 configMapNameOverride: {}
+annotations: {}
 
 livenessProbe:
 readinessProbe:

@@ -6,6 +6,10 @@ image:
 env:
   QGIS_PROJECT_FILE:
     value: '/etc/qgisserver/project.qgz'
+
+annotations:
+  reloader.stakater.com/auto: 'true'
+
 resources:
   limits:
     memory: 1Gi
