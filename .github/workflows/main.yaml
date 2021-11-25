@@ -29,11 +29,12 @@ jobs:
       - run: echo "${HOME}/.local/bin" >> ${GITHUB_PATH}
       - run: python3 -m pip install --user --requirement=ci/requirements.txt
 
+      - name: Install helm
+        uses: azure/setup-helm@v1
+
       - name: Checks
         run: c2cciutils-checks
 
-      - name: Install helm
-        uses: azure/setup-helm@v1
       - run: helm dependency update .
       - run: helm lint .
       - run: helm lint --values=tests/qgis.yaml .

@@ -203,7 +203,7 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: qgis-apache
+  name: qgis-apache-main
   labels:
     helm.sh/chart: apache-0.1.0
     app.kubernetes.io/version: "1.0"
@@ -213,7 +213,7 @@ metadata:
     app.kubernetes.io/component: main
 spec:
   rules:
-    - host: "qgis.local"
+    - host: qgis.local
       http:
         paths:
           - path: /
