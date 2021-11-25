@@ -63,7 +63,8 @@ apacheExporter:
 ingress:
   enabled: true
   hosts:
-    - host: qgis.local
+    - name: main
+      host: qgis.local
       paths:
         - /
 
