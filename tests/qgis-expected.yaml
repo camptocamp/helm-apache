@@ -69,6 +69,8 @@ metadata:
     app.kubernetes.io/name: apache
     app.kubernetes.io/instance: qgis
     app.kubernetes.io/component: main
+  annotations:
+    reloader.stakater.com/auto: "true"
 spec:
   replicas: 2
   strategy:
