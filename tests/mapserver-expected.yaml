@@ -28,6 +28,7 @@ metadata:
     app.kubernetes.io/name: apache
     app.kubernetes.io/instance: mapserver
     app.kubernetes.io/component: main
+    prometheus: "true"
 spec:
   type: ClusterIP
   ports:

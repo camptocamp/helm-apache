@@ -3,6 +3,7 @@ kind: Service
 metadata:
   name: {{ include "common.fullname" ( dict "root" . "service" .Values ) }}
   labels: {{ include "common.labels" ( dict "root" . "service" .Values ) | nindent 4 }}
+    prometheus: "true"
 spec:
   type: {{ .Values.service.type }}
   ports:
