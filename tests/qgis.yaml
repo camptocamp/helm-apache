@@ -62,11 +62,18 @@ apacheExporter:
 
 ingress:
   enabled: true
+  paths:
+    - /
+    - /qgis/
   hosts:
     - name: main
       host: qgis.local
-      paths:
-        - /
+      tls:
+        secretName: qgis-tls
+    - name: test
+      host: qgis.test.local
+      tls:
+        secretName: qgis-test-tls
 
 securityContext:
   runAsNonRoot: true
