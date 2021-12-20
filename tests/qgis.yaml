@@ -6,6 +6,8 @@ image:
 env:
   QGIS_PROJECT_FILE:
     value: '/etc/qgisserver/project.qgz'
+  QGIS_SERVER_IGNORE_BAD_LAYERS:
+    value: 'true'
 
 annotations:
   reloader.stakater.com/auto: 'true'

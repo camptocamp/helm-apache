@@ -146,6 +146,8 @@ spec:
           env:
               - name: "QGIS_PROJECT_FILE"
                 value: "/etc/qgisserver/project.qgz"
+              - name: "QGIS_SERVER_IGNORE_BAD_LAYERS"
+                value: "true"
           terminationMessagePolicy: FallbackToLogsOnError
           resources:
             limits:
