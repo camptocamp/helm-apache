@@ -3,6 +3,19 @@ entries:
   apache:
   - apiVersion: v2
     appVersion: "1.0"
+    created: "2022-02-03T12:52:15.032771159Z"
+    dependencies:
+    - name: common
+      repository: https://camptocamp.github.io/helm-common
+      version: 0.1.6
+    description: A Helm chart for Kubernetes
+    digest: b5940454044b82f19e9b9b64c0f4246a98e269c398f71b705012de9b164898ac
+    name: apache
+    urls:
+    - https://github.com/camptocamp/helm-apache/releases/download/0.1.19/apache-0.1.19.tgz
+    version: 0.1.19
+  - apiVersion: v2
+    appVersion: "1.0"
     created: "2022-02-02T15:58:39.834065972Z"
     dependencies:
     - name: common
@@ -134,4 +147,4 @@ entries:
     urls:
     - https://github.com/camptocamp/helm-mapserver/releases/download/mapserver-0.1.0/mapserver-0.1.0.tgz
     version: 0.1.0
-generated: "2022-02-02T15:58:39.834119973Z"
+generated: "2022-02-03T12:52:15.032811359Z"
