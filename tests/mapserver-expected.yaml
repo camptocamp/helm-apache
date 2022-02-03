@@ -57,8 +57,6 @@ metadata:
     app.kubernetes.io/name: apache
     app.kubernetes.io/instance: mapserver
     app.kubernetes.io/component: main
-  annotations:
-    {}
 spec:
   replicas: 1
   strategy:
