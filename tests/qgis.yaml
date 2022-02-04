@@ -12,6 +12,14 @@ env:
 annotations:
   reloader.stakater.com/auto: 'true'
 
+command:
+  - test1
+  - test2
+
+args:
+  - test3
+  - test4
+
 resources:
   limits:
     memory: 1Gi

@@ -152,6 +152,12 @@ spec:
           resources:
             limits:
               memory: 1Gi
+          command:
+            - test1
+            - test2
+          args:
+            - test3
+            - test4
           volumeMounts:
             - mountPath: /etc/qgisserver
               name: configs
