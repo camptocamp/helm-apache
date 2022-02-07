@@ -34,6 +34,14 @@ spec:
       containers:
         - name: apache
           {{- include "common.containerConfig" ( dict "root" . "container" .Values ) | nindent 10 }}
+          {{- with .Values.command }}
+          command:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.args }}
+          args:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           volumeMounts:
             - mountPath: {{ .Values.config.folder }}
               name: configs
