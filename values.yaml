@@ -7,6 +7,7 @@ fullnameOverride: ''
 
 imagePullSecrets: []
 replicaCount: 1
+revisionHistoryLimit: 3
 
 env: {}
 # ConfigMap or secret from env name override
