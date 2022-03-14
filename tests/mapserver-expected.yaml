@@ -22,7 +22,7 @@ kind: Service
 metadata:
   name: mapserver-apache
   labels:
-    helm.sh/chart: apache-0.1.0
+    helm.sh/chart: apache
     app.kubernetes.io/version: "1.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: apache
@@ -50,8 +50,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mapserver-apache
+
   labels:
-    helm.sh/chart: apache-0.1.0
+    helm.sh/chart: apache
     app.kubernetes.io/version: "1.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: apache
@@ -74,7 +75,6 @@ spec:
         app.kubernetes.io/instance: mapserver
         app.kubernetes.io/component: main
     spec:
-
       serviceAccountName: default
       securityContext:
         runAsNonRoot: true
