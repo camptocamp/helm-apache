@@ -22,7 +22,7 @@ kind: ServiceAccount
 metadata:
   name: qgis
   labels:
-    helm.sh/chart: apache-0.1.0
+    helm.sh/chart: apache
     app.kubernetes.io/version: "1.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: apache
@@ -35,7 +35,7 @@ kind: Service
 metadata:
   name: qgis-apache
   labels:
-    helm.sh/chart: apache-0.1.0
+    helm.sh/chart: apache
     app.kubernetes.io/version: "1.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: apache
@@ -63,8 +63,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: qgis-apache
+
   labels:
-    helm.sh/chart: apache-0.1.0
+    helm.sh/chart: apache
     app.kubernetes.io/version: "1.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: apache
@@ -90,7 +91,6 @@ spec:
         app.kubernetes.io/component: main
         foo: bar
     spec:
-
       serviceAccountName: qgis
       securityContext:
         runAsNonRoot: true
@@ -105,32 +105,32 @@ spec:
           image: "camptocamp/geomapfishdemo-config:prod-2-7"
           imagePullPolicy: IfNotPresent
           env:
-              - name: "PGDATABASE"
-                value: "postgres"
-              - name: "PGHOST"
-                value: "test-pg-postgresql"
-              - name: "PGHOST_SLAVE"
-                value: "test-pg-postgresql"
-              - name: "PGPASSWORD"
-                value: "mySuperTestingPassword"
-              - name: "PGPORT"
-                value: "5432"
-              - name: "PGPORT_SLAVE"
-                value: "5432"
-              - name: "PGSCHEMA"
-                value: "main"
-              - name: "PGUSER"
-                value: "postgres"
-              - name: "QGIS_PROJECT_FILE"
-                value: "/etc/qgisserver/project.qgz"
-              - name: "QGIS_SERVER_IGNORE_BAD_LAYERS"
-                value: "TRUE"
-              - name: "VISIBLE_ENTRY_POINT"
-                value: "/"
-              - name: "VISIBLE_WEB_HOST"
-                value: "example.com"
-              - name: "VISIBLE_WEB_PROTOCOL"
-                value: "https"
+            - name: "PGDATABASE"
+              value: "postgres"
+            - name: "PGHOST"
+              value: "test-pg-postgresql"
+            - name: "PGHOST_SLAVE"
+              value: "test-pg-postgresql"
+            - name: "PGPASSWORD"
+              value: "mySuperTestingPassword"
+            - name: "PGPORT"
+              value: "5432"
+            - name: "PGPORT_SLAVE"
+              value: "5432"
+            - name: "PGSCHEMA"
+              value: "main"
+            - name: "PGUSER"
+              value: "postgres"
+            - name: "QGIS_PROJECT_FILE"
+              value: "/etc/qgisserver/project.qgz"
+            - name: "QGIS_SERVER_IGNORE_BAD_LAYERS"
+              value: "TRUE"
+            - name: "VISIBLE_ENTRY_POINT"
+              value: "/"
+            - name: "VISIBLE_WEB_HOST"
+              value: "example.com"
+            - name: "VISIBLE_WEB_PROTOCOL"
+              value: "https"
           terminationMessagePolicy: FallbackToLogsOnError
           resources:
             {}
@@ -146,10 +146,10 @@ spec:
           image: "camptocamp/qgis-server:3.20"
           imagePullPolicy: IfNotPresent
           env:
-              - name: "QGIS_PROJECT_FILE"
-                value: "/etc/qgisserver/project.qgz"
-              - name: "QGIS_SERVER_IGNORE_BAD_LAYERS"
-                value: "true"
+            - name: "QGIS_PROJECT_FILE"
+              value: "/etc/qgisserver/project.qgz"
+            - name: "QGIS_SERVER_IGNORE_BAD_LAYERS"
+              value: "true"
           terminationMessagePolicy: FallbackToLogsOnError
           resources:
             limits:
@@ -212,7 +212,7 @@ kind: Ingress
 metadata:
   name: qgis-apache-main
   labels:
-    helm.sh/chart: apache-0.1.0
+    helm.sh/chart: apache
     app.kubernetes.io/version: "1.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: apache
@@ -248,7 +248,7 @@ kind: Ingress
 metadata:
   name: qgis-apache-test
   labels:
-    helm.sh/chart: apache-0.1.0
+    helm.sh/chart: apache
     app.kubernetes.io/version: "1.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: apache
