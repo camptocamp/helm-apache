@@ -2,16 +2,20 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+global:
+  image:
+    pullSecrets: []
+    pullPolicy: IfNotPresent
+  # ConfigMap or secret from env name override
+  configMapNameOverride: {}
+
 nameOverride: ''
 fullnameOverride: ''
 
-imagePullSecrets: []
 replicaCount: 1
 revisionHistoryLimit: 3
 
 env: {}
-# ConfigMap or secret from env name override
-configMapNameOverride: {}
 annotations: {}
 
 livenessProbe:
@@ -28,7 +32,6 @@ image:
   repository: camptocamp/mapserver
   tag: latest
   sha:
-  pullPolicy: IfNotPresent
 
 config:
   enabled: false
@@ -38,7 +41,6 @@ config:
     sha:
     tag: latest
   env: {}
-  configMapNameOverride: {}
   resources: {}
 
 apacheExporter:
