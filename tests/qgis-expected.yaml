@@ -122,7 +122,7 @@ spec:
             - name: "PGUSER"
               value: "postgres"
             - name: "QGIS_PROJECT_FILE"
-              value: "/etc/qgisserver/project.qgz"
+              value: "/etc/qgisserver/project.qgs"
             - name: "QGIS_SERVER_IGNORE_BAD_LAYERS"
               value: "TRUE"
             - name: "VISIBLE_ENTRY_POINT"
@@ -147,7 +147,7 @@ spec:
           imagePullPolicy: IfNotPresent
           env:
             - name: "QGIS_PROJECT_FILE"
-              value: "/etc/qgisserver/project.qgz"
+              value: "/etc/qgisserver/project.qgs"
             - name: "QGIS_SERVER_IGNORE_BAD_LAYERS"
               value: "true"
           terminationMessagePolicy: FallbackToLogsOnError
