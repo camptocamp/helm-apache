@@ -1,4 +1,4 @@
-HELM != helm
+HELM ?= helm
 
 gen-expected:
 	${HELM} template --namespace=default --values=tests/mapserver.yaml mapserver . > tests/mapserver-expected.yaml || \
