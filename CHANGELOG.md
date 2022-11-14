@@ -1,5 +1,44 @@
 # Changelog
 
+## [0.3.0](https://github.com/camptocamp/helm-apache/tree/0.3.0) (2022-11-14)
+
+[Full Changelog](https://github.com/camptocamp/helm-apache/compare/0.2.2...0.3.0)
+
+#### :books: Documentation
+
+- Add generated changelog [\#93](https://github.com/camptocamp/helm-apache/pull/93) ([sbrunner](https://github.com/sbrunner))
+
+#### :wrench: Build, CI, Tests, Code style
+
+- Fix repository in workflow used to delete old workflow runs [\#114](https://github.com/camptocamp/helm-apache/pull/114) ([sbrunner](https://github.com/sbrunner))
+- Fix repository in workflow used to delete old workflow runs [\#113](https://github.com/camptocamp/helm-apache/pull/113) ([sbrunner](https://github.com/sbrunner))
+- Add workflow to delete old workflow runs [\#110](https://github.com/camptocamp/helm-apache/pull/110) ([sbrunner](https://github.com/sbrunner))
+- Fix the get config in changelog workflow [\#105](https://github.com/camptocamp/helm-apache/pull/105) ([sbrunner](https://github.com/sbrunner))
+- Schedule Renovate on early Saturday [\#101](https://github.com/camptocamp/helm-apache/pull/101) ([sbrunner](https://github.com/sbrunner))
+- Fix the changelog generator workflow [\#100](https://github.com/camptocamp/helm-apache/pull/100) ([sbrunner](https://github.com/sbrunner))
+- Clean all the images already present in the image given by GitHub [\#99](https://github.com/camptocamp/helm-apache/pull/99) ([sbrunner](https://github.com/sbrunner))
+- Update the changelog [\#98](https://github.com/camptocamp/helm-apache/pull/98) ([c2c-bot-gis-ci](https://github.com/c2c-bot-gis-ci))
+- Update the changelog generation workflow [\#97](https://github.com/camptocamp/helm-apache/pull/97) ([sbrunner](https://github.com/sbrunner))
+- Remove Dependabot configuration [\#96](https://github.com/camptocamp/helm-apache/pull/96) ([sbrunner](https://github.com/sbrunner))
+- Update the changelog [\#94](https://github.com/camptocamp/helm-apache/pull/94) ([github-actions[bot]](https://github.com/apps/github-actions))
+- Don't run 2 CI jobs in a pull request [\#89](https://github.com/camptocamp/helm-apache/pull/89) ([sbrunner](https://github.com/sbrunner))
+
+#### :package: Dependencies update
+
+- Update Helm release common to v0.3.0 [\#115](https://github.com/camptocamp/helm-apache/pull/115) ([renovate[bot]](https://github.com/apps/renovate))
+- Update dependency c2cciutils to v1.3.11 [\#111](https://github.com/camptocamp/helm-apache/pull/111) ([renovate[bot]](https://github.com/apps/renovate))
+- Update dependency c2cciutils to v1.3.10 [\#109](https://github.com/camptocamp/helm-apache/pull/109) ([renovate[bot]](https://github.com/apps/renovate))
+- Update dependency c2cciutils to v1.3.9 [\#108](https://github.com/camptocamp/helm-apache/pull/108) ([renovate[bot]](https://github.com/apps/renovate))
+- Update dependency c2cciutils to v1.3.7 [\#107](https://github.com/camptocamp/helm-apache/pull/107) ([renovate[bot]](https://github.com/apps/renovate))
+- Update dependency c2cciutils to v1.3.5 [\#106](https://github.com/camptocamp/helm-apache/pull/106) ([renovate[bot]](https://github.com/apps/renovate))
+- Update dependency c2cciutils to v1.3.2 [\#103](https://github.com/camptocamp/helm-apache/pull/103) ([renovate[bot]](https://github.com/apps/renovate))
+- Update dependency c2cciutils to v1.2.1 [\#95](https://github.com/camptocamp/helm-apache/pull/95) ([renovate[bot]](https://github.com/apps/renovate))
+- Update azure/setup-helm action to v3 [\#92](https://github.com/camptocamp/helm-apache/pull/92) ([renovate[bot]](https://github.com/apps/renovate))
+- Update dependency c2cciutils to v1.2.0 [\#91](https://github.com/camptocamp/helm-apache/pull/91) ([renovate[bot]](https://github.com/apps/renovate))
+- Update dependency c2cciutils to v1.2.dev20220620100308 [\#90](https://github.com/camptocamp/helm-apache/pull/90) ([renovate[bot]](https://github.com/apps/renovate))
+- Update dependency c2cciutils to v1.2.dev20220601085126 [\#88](https://github.com/camptocamp/helm-apache/pull/88) ([renovate[bot]](https://github.com/apps/renovate))
+- Update dependency c2cciutils to v1.2.dev20220527115520 [\#86](https://github.com/camptocamp/helm-apache/pull/86) ([renovate[bot]](https://github.com/apps/renovate))
+
 ## [0.2.2](https://github.com/camptocamp/helm-apache/tree/0.2.2) (2022-05-20)
 
 [Full Changelog](https://github.com/camptocamp/helm-apache/compare/0.2.1...0.2.2)
