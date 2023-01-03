@@ -93,8 +93,7 @@ spec:
     spec:
       serviceAccountName: qgis
       securityContext:
-        runAsNonRoot: true
-        runAsUser: 33
+        {}
       affinity:
         {}
       initContainers:
