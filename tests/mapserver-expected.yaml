@@ -77,8 +77,7 @@ spec:
     spec:
       serviceAccountName: default
       securityContext:
-        runAsNonRoot: true
-        runAsUser: 33
+        {}
       affinity:
         {}
       containers:
