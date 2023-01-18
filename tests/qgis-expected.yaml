@@ -89,7 +89,7 @@ spec:
         app.kubernetes.io/name: apache
         app.kubernetes.io/instance: qgis
         app.kubernetes.io/component: main
-        foo: "bar"
+        foo: bar
     spec:
       serviceAccountName: qgis
       securityContext:
@@ -105,31 +105,31 @@ spec:
           imagePullPolicy: IfNotPresent
           env:
             - name: "PGDATABASE"
-              value: "postgres"
+              value: postgres
             - name: "PGHOST"
-              value: "test-pg-postgresql"
+              value: test-pg-postgresql
             - name: "PGHOST_SLAVE"
-              value: "test-pg-postgresql"
+              value: test-pg-postgresql
             - name: "PGPASSWORD"
-              value: "mySuperTestingPassword"
+              value: mySuperTestingPassword
             - name: "PGPORT"
               value: "5432"
             - name: "PGPORT_SLAVE"
               value: "5432"
             - name: "PGSCHEMA"
-              value: "main"
+              value: main
             - name: "PGUSER"
-              value: "postgres"
+              value: postgres
             - name: "QGIS_PROJECT_FILE"
-              value: "/etc/qgisserver/project.qgs"
+              value: /etc/qgisserver/project.qgs
             - name: "QGIS_SERVER_IGNORE_BAD_LAYERS"
               value: "TRUE"
             - name: "VISIBLE_ENTRY_POINT"
-              value: "/"
+              value: /
             - name: "VISIBLE_WEB_HOST"
-              value: "example.com"
+              value: example.com
             - name: "VISIBLE_WEB_PROTOCOL"
-              value: "https"
+              value: https
           terminationMessagePolicy: FallbackToLogsOnError
           resources:
             {}
@@ -146,7 +146,7 @@ spec:
           imagePullPolicy: IfNotPresent
           env:
             - name: "QGIS_PROJECT_FILE"
-              value: "/etc/qgisserver/project.qgs"
+              value: /etc/qgisserver/project.qgs
             - name: "QGIS_SERVER_IGNORE_BAD_LAYERS"
               value: "true"
           terminationMessagePolicy: FallbackToLogsOnError
