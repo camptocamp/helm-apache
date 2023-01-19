@@ -8,6 +8,7 @@ global:
     pullPolicy: IfNotPresent
   # ConfigMap or secret from env name override
   configMapNameOverride: {}
+  revisionHistoryLimit: 3
 
 nameOverride: ''
 fullnameOverride: ''
