@@ -37,6 +37,16 @@ jobs:
       - name: Install helm
         uses: azure/setup-helm@v3
 
+      - uses: actions/cache@v3
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
+          restore-keys: "pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}\npre-commit-"
+      - run: pre-commit run --all-files
+        env:
+          SKIP: helm-lock
+      - run: git diff
+        if: failure()
       - name: Checks
         run: c2cciutils-checks
 
