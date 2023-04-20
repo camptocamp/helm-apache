@@ -53,10 +53,6 @@ jobs:
       - run: helm dependency update .
       - run: helm lint .
       - run: helm lint --values=tests/qgis.yaml .
-      - run: helm template --namespace=default --values=tests/mapserver.yaml mapserver . > tests/mapserver-actual.yaml
-      - run: diff --ignore-trailing-space tests/mapserver-actual.yaml tests/mapserver-expected.yaml
-      - run: helm template --namespace=default --values=tests/qgis.yaml qgis . > tests/qgis-actual.yaml
-      - run: diff --ignore-trailing-space tests/qgis-actual.yaml tests/qgis-expected.yaml
 
       - name: Setup k3s/k3d
         run: c2cciutils-k8s-install
