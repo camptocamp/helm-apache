@@ -141,3 +141,26 @@ spec:
           emptyDir: {}
         - name: tmp-volume
           emptyDir: {}
+---
+# Source: apache/templates/podmonitor.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: mapserver-apache
+  labels:
+    helm.sh/chart: apache
+    app.kubernetes.io/version: "1.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: apache
+    app.kubernetes.io/instance: mapserver
+    app.kubernetes.io/component: main
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: apache
+      app.kubernetes.io/instance: mapserver
+      app.kubernetes.io/component: main
+  podMetricsEndpoints:
+    - honorLabels: true
+      interval: 10s
+      port: prometheus

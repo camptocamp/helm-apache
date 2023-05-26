@@ -276,3 +276,28 @@ spec:
                 name: qgis-apache
                 port:
                   number: 80
+---
+# Source: apache/templates/podmonitor.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: qgis-apache
+  labels:
+    helm.sh/chart: apache
+    app.kubernetes.io/version: "1.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: apache
+    app.kubernetes.io/instance: qgis
+    app.kubernetes.io/component: main
+  annotations:
+    reloader.stakater.com/auto: "true"
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: apache
+      app.kubernetes.io/instance: qgis
+      app.kubernetes.io/component: main
+  podMetricsEndpoints:
+    - honorLabels: true
+      interval: 10s
+      port: prometheus

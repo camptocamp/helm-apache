@@ -19,6 +19,9 @@ revisionHistoryLimit: 3
 env: {}
 annotations: {}
 
+prometheus:
+  enabled: true
+
 livenessProbe:
 readinessProbe:
   httpGet:
