@@ -39,7 +39,7 @@ jobs:
       - run: python3 -m pip install --user --requirement=ci/requirements.txt
 
       - name: Install helm
-        uses: azure/setup-helm@v3
+        uses: azure/setup-helm@v4
 
       - uses: actions/cache@v4
         with:
