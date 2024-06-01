@@ -9,7 +9,7 @@ ci:
     - jsonschema-validator
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
+    rev: v4.6.0
     hooks:
       - id: detect-private-key
       - id: check-merge-conflict
@@ -60,7 +60,7 @@ repos:
           - .
           - tests/qgis-expected.yaml
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.2.6
+    rev: v2.3.0
     hooks:
       - id: codespell
   - repo: https://github.com/pre-commit/mirrors-prettier
