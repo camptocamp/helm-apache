@@ -1,3 +1,9 @@
 [tool.black]
 line-length = 110
 target-version = ["py39"]
+
+[tool.poetry]
+name = "helm-mapserver"
+version = "0.0.0"
+description = "HELM chart for Apache applications"
+authors = ["Camptocamp <info@camptocamp.com>"]
