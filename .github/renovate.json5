@@ -60,5 +60,10 @@
       groupName: 'CI dependencies',
       automerge: true,
     },
+    /** No major updates */
+    {
+      matchUpdateTypes: ['major'],
+      enabled: false,
+    },
   ],
 }
