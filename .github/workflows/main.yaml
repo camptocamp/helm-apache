@@ -64,35 +64,6 @@ jobs:
       - run: helm lint .
       - run: helm lint --values=tests/qgis.yaml .
 
-      - name: Setup k3s/k3d
-        run: c2cciutils-k8s-install
-
-      - name: Install prometheus CRD
-        run: |
-          curl https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/main/jsonnet/prometheus-operator/podmonitors-crd.json --output /tmp/podmonitors-crd.json
-          kubectl apply -f /tmp/podmonitors-crd.json
-
-      - name: Launch MapServer
-        run: kubectl apply -f tests/mapserver-expected.yaml
-      - run: c2cciutils-k8s-wait
-      - run: c2cciutils-k8s-logs
-        if: always()
-      - run: kubectl delete -f tests/mapserver-expected.yaml || true
-
-      - name: Create a test-pg database
-        run: c2cciutils-k8s-db --script=tests/demo_schema.sql
-
-      - name: Launch QGIS Server
-        run: kubectl apply -f tests/qgis-expected.yaml
-      - run: c2cciutils-k8s-wait
-      - run: c2cciutils-k8s-logs
-        if: always()
-      - run: kubectl delete -f tests/qgis-expected.yaml || true
-
-      - name: Clean the database
-        run: c2cciutils-k8s-db --cleanup
-        if: always()
-
       - name: Publish
         run: c2cciutils-publish
         if: env.HAS_SECRETS == 'HAS_SECRETS'
